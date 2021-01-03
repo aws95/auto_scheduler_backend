@@ -12,7 +12,7 @@ const path = require("path");
 const crypto = require("crypto");
 const Post = require("./models/Post");
 const schedule = require("node-schedule");
-const axios = require("axios");
+const FB = require("fb");
 
 //middleweare to parse all the data going to database + always before routes
 app.use(cors());
@@ -83,24 +83,26 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   }
   const message =
     req.body.description || "there is no description to this post";
-  schedule.scheduleJob("39 * * * *", () => {
+  console.log(req.body);
+  const year = new Date(req.body.date).getYear() + 1900;
+  const month = new Date(req.body.date).getMonth();
+  const day = new Date(req.body.date).getDay();
+  const hours = new Date(req.body.date).getHours();
+  const minutes = new Date(req.body.date).getMinutes();
+  const seconds = new Date(req.body.date).getSeconds();
+  console.log(date);
+
+  /*schedule.scheduleJob(new Date(req.body.date).toISOString(), () => {
     console.log(message);
-    axios
-      .post("https://graph.facebook.com/103791674899163/feed?", {
-        message: message,
-        access_token: token,
-      })
-      .then(
-        (res) => {
-          const result = res.data;
-          console.log(result);
-          alert("Success!");
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
-  });
+    FB.setAccessToken(process.env.ACCESS_TOKEN);
+    FB.api("/103791674899163/feed", "POST", { message: message }, (res) => {
+      if (res.error) {
+        console.log("error occurred: " + JSON.stringify(res.error));
+        return;
+      }
+      console.log("successfully posted to page!");
+    });
+  });*/
 });
 
 //@route GET /files
